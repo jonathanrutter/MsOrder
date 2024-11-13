@@ -1,0 +1,21 @@
+###
+# docker compose to launch a mySql image
+# to start the container:
+# docker compose up -d
+# to stop the container:
+# docker compose down
+###
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD : mysql
+    # expose internal port 3306 on external port 3306
+    ports:
+      - "3306:3306"
+    volumes:
+      # persist the mysql data in ./mysql folder in the project
+      - ./mysql:/var/lib/mysql
+      # load the local init.sql file to the image to run at start up to create the DB
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
