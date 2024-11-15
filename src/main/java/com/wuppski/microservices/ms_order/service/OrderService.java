@@ -1,5 +1,6 @@
 package com.wuppski.microservices.ms_order.service;
 
+import com.wuppski.microservices.ms_order.client.InventoryClient;
 import com.wuppski.microservices.ms_order.dto.OrderRequest;
 import com.wuppski.microservices.ms_order.model.Order;
 import com.wuppski.microservices.ms_order.repository.OrderRepository;
@@ -15,19 +16,26 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-
+    private final InventoryClient inventoryClient;
     /**
      * Map the Order Request to an Order and save to the DB
      * @param orderRequest incoming order
      */
     public void placeOrder(OrderRequest orderRequest) {
-        Order order = new Order();
-        order.setOrderNumber(UUID.randomUUID().toString());
-        order.setPrice(orderRequest.price());
-        order.setSkuCode(orderRequest.skuCode());
-        order.setQuantity(orderRequest.quantity());
+        var isProductInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
-        orderRepository.save(order);
+        if (isProductInStock) {
+            Order order = new Order();
+            order.setOrderNumber(UUID.randomUUID().toString());
+            order.setPrice(orderRequest.price());
+            order.setSkuCode(orderRequest.skuCode());
+            order.setQuantity(orderRequest.quantity());
+
+            orderRepository.save(order);
+        }
+        else {
+            throw new RuntimeException("Product with skuCode " + orderRequest.skuCode() + " is not in Stock");
+        }
         log.info("Order saved successfully");
     }
 }
