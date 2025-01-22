@@ -14,3 +14,11 @@ https://www.youtube.com/watch?v=vdAkGFCq-M4&list=PLSVW22jAG8pDeU80nDzbUgr8qqzEMp
 End points:
 http://localhost:8081/swagger-ui/index.html
 http://localhost:8081/api-docs
+
+Kafka Server:
+http://localhost:8086/
+1. Configure new cluster
+   1. Give any name
+   2. Bootstrap Servers: Broker - 29092
+   3. Submit
+2. Then select topi
