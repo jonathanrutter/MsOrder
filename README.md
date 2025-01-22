@@ -21,4 +21,4 @@ http://localhost:8086/
    1. Give any name
    2. Bootstrap Servers: Broker - 29092
    3. Submit
-2. Then select topi
+2. Then select topic 'order-placed' to see all the messages sent to the Kafka server.
