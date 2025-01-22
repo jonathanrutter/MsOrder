@@ -1,8 +1,9 @@
 package com.wuppski.microservices.ms_order.config;
 
 import com.wuppski.microservices.ms_order.client.InventoryClient;
+import io.micrometer.observation.ObservationRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
@@ -15,16 +16,23 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestClientConfig {
 
     @Value("${inventory.url}")
     private String inventoryServiceURL;
+
+    /**
+     * This will add the TraceId to the Inventory Service calls
+     */
+    private final ObservationRegistry observationRegistry;
 
     @Bean
     public InventoryClient inventoryClient() {
         RestClient restClient = RestClient.builder()
                 .baseUrl(inventoryServiceURL)
                 .requestFactory(getClientRequestFactory())
+                .observationRegistry(observationRegistry)
                 .build();
         var restClientAdapter = RestClientAdapter.create(restClient);
         var httpServiceProxyFactory = HttpServiceProxyFactory
